@@ -1,0 +1,33 @@
+name: Build
+on:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests pillow pywebview pyinstaller
+      - run: pyinstaller --onefile --windowed --name ValorantShop --collect-all webview valorant_shop.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ValorantShop-Windows
+          path: dist/ValorantShop.exe
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests pillow pywebview pyinstaller
+      - run: pyinstaller --windowed --name ValorantShop --collect-all webview valorant_shop.py
+      - run: ditto -c -k --keepParent dist/ValorantShop.app ValorantShop-Mac.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ValorantShop-Mac
+          path: ValorantShop-Mac.zip
